@@ -19,8 +19,10 @@ def get_book(book_id):
 def add_book():
     data = request.json
     book_id = data.get('id')
+    
     if book_id in books:
         return jsonify({"error": "Book already exists"}), 400
+    
     books[book_id] = data
     return jsonify({"message": "Book added successfully."}), 201
 
