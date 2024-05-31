@@ -43,6 +43,16 @@ def delete_book(book_id):
     else:
         return jsonify({"error": "Book not found"}), 404
 
+@app.route('/books/search', methods=['GET'])
+def search_books():
+    query_title = request.args.get('title', '').lower() 
+    matching_books = [book for book in books.values() if book.get('title', '').lower() == query_title] 
+
+    if matching_books:
+        return jsonify(matching_books), 200
+    else:
+        return jsonify({"error": "No books found matching the search criteria"}), 404
+
 if __name__ == '__main__':
     port = os.getenv('FLASK_PORT', 5000)
     app.run(host='0.0.0.0', port=int(port))
