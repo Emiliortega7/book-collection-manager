@@ -6,64 +6,64 @@ load_dotenv()
 
 app = Flask(__name__)
 
-books = {}
+book_collection = {}  # Changed from 'books' for clarity
 
 # Utility Functions
-def book_exists(book_id):
-    return book_id in books
+def does_book_exist(book_id):
+    return book_id in book_collection
 
-def add_book_to_collection(book_id, data):
-    books[book_id] = data
+def add_book(book_id, book_details):
+    book_collection[book_id] = book_details
 
-def update_book_in_collection(book_id, data):
-    books[book_id].update(data)
+def update_book_details(book_id, new_details):
+    book_collection[book_id].update(new_details)
 
-def delete_book_from_collection(book_id):
-    del books[book_id]
+def remove_book(book_id):
+    del book_collection[book_id]
 
-def find_books_by_title(title_query):
-    return [book for book in books.values() if book.get('title', '').lower() == title_query.lower()]
+def search_books_by_title(title_query):
+    return [book for book in book_collection.values() if book.get('title', '').lower() == title_query.lower()]
 
 # Route Handlers
 @app.route('/books/<book_id>', methods=['GET'])
-def get_book(book_id):
-    if book_exists(book_id):
-        return jsonify(books[book_id]), 200
+def get_book_details(book_id):
+    if does_book_exist(book_id):
+        return jsonify(book_collection[book_id]), 200
     else:
         return jsonify({"error": "Book not found"}), 404
 
 @app.route('/books', methods=['POST'])
-def add_book():
-    data = request.json
-    book_id = data.get('id')
+def create_book():
+    book_details = request.json
+    book_id = book_details.get('id')
     
-    if book_exists(book_id):
+    if does_book_exist(book_id):
         return jsonify({"error": "Book already exists"}), 400
     
-    add_book_to_collection(book_id, data)
+    add_book(book_id, book_details)
     return jsonify({"message": "Book added successfully."}), 201
 
 @app.route('/books/<book_id>', methods=['PUT'])
-def update_book(book_id):
-    if book_exists(book_id):
-        data = request.json
-        update_book_in_collection(book_id, data)
+def modify_book(book_id):
+    if does_book_exist(book_id):
+        new_details = request.json
+        update_book_details(book_id, new_details)
         return jsonify({"message": "Book updated successfully."}), 200
     else:
         return jsonify({"error": "Book not found"}), 404
 
 @app.route('/books/<book_id>', methods=['DELETE'])
-def delete_book(book_id):
-    if book_exists(book_id):
-        delete_book_from_collection(book_id)
+def delete_book_entry(book_id):
+    if does_book_exist(book_id):
+        remove_book(book_id)
         return jsonify({"message": "Book deleted successfully."}), 200
     else:
         return jsonify({"error": "Book not found"}), 404
 
 @app.route('/books/search', methods=['GET'])
-def search_books():
+def find_books():
     query_title = request.args.get('title', '') 
-    matching_books = find_books_by_title(query_title)
+    matching_books = search_books_by_title(query_title)
 
     if matching_books:
         return jsonify(matching_books), 200
