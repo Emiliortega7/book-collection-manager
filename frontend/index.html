@@ -2,6 +2,24 @@
 <html>
 <head>
     <title>Environment Variables Example</title>
+    <style>
+        /* Default light theme styles */
+        body {
+            background-color: #FFF;
+            color: #000;
+        }
+        /* Dark theme styles */
+        body.dark-mode {
+            background-color: #333;
+            color: #FFF;
+        }
+        /* Toggle switch */
+        .theme-switch {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const apiBaseUrl = '{{API_BASE_URL}}';
@@ -9,10 +27,19 @@
 
             console.log('API Base URL: ', apiBaseUrl);
             console.log('API Key: ', apiKey);
+
+            const themeSwitch = document.querySelector('.theme-switch');
+            
+            themeSwitch.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+            });
         });
     </script>
 </head>
 <body>
     <h1>Environment Variables Example</h1>
+    <label class="theme-switch">
+        <input type="checkbox"> Toggle Dark Mode
+    </label>
 </body>
 </html>
