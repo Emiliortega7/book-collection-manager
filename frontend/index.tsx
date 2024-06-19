@@ -1,50 +1,71 @@
-// ErrorBoundary.tsx
-import React, { Component, ReactNode } from 'react';
-
-interface Props {
-  children: ReactNode;
-}
-
-interface State {
-  hasError: boolean;
-}
-
-class ErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false };
-
-  static getDerivedStateFromError(_: Error): State {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can also log the error to an error reporting service
-    console.error("Uncaught error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <h2>Something went wrong. Please reload the page.</h2>;
+// Debounce function example
+function debounce(fn: Function, delay: number) {
+  let timeoutID: number | null = null;
+  return function (...args: any) {
+    if (timeoutID) {
+      clearTimeout(timeoutID);
     }
+    timeoutID = window.setTimeout(() => fn(...args), delay);
+  };
+}
+```
 
-    return this.props.children;
+```typescript
+// Throttle function example
+function throttle(fn: Function, limit: number) {
+  let inThrottle: boolean;
+  return function (...args: any) {
+    if (!inThrottle) {
+      fn(...args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
+```
+
+```typescript
+// Basic Caching Example
+const cache = {};
+
+function getCachedData(url: string) {
+  if (cache[url]) {
+    return Promise.resolve(cache[url]);
+  } else {
+    return fetch(url).then(response => response.json()).then(data => {
+      cache[url] = data;
+      return data;
+    });
   }
 }
-
-export default ErrorBoundary;
 ```
-```typescript
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import ErrorBoundary from './ErrorBoundary'; // Import ErrorBoundary
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ErrorBoundary> {/* Wrap App within ErrorBoundary */}
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+```typescript
+import React, { useState, useEffect } from 'react';
+
+const useDebouncedEffect = (fn: () => void, delay: number, deps: any[]) => {
+  useEffect(() => {
+    const handler = setTimeout(() => fn(), delay);
+
+    return () => clearTimeout(handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, delay]);
+};
+
+const SearchBooks = () => {
+  const [query, setQuery] = useState('');
+
+  useDebouncedEffect(() => {
+    // Assume fetchBooks is a function that fetches books from an API
+    fetchBooks(query).then(books => console.log(books));
+  }, 500, [query]);
+
+  return (
+    <input
+      type="text"
+      value={query}
+      onChange={e => setQuery(e.target value)}
+      placeholder="Search books..."
+    />
+  );
+};
