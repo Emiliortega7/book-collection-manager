@@ -1,46 +1,21 @@
-// Debounce function example
-function debounce(fn: Function, delay: number) {
-  let timeoutID: number | null = null;
-  return function (...args: any) {
-    if (timeoutID) {
-      clearTimeout(timeoutID);
-    }
-    timeoutID = window.setTimeout(() => fn(...args), delay);
-  };
+interface Cache {
+  [key: string]: any;
 }
-```
 
-```typescript
-// Throttle function example
-function throttle(fn: Function, limit: number) {
-  let inThrottle: boolean;
-  return function (...args: any) {
-    if (!inThrottle) {
-      fn(...args);
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
-    }
-  };
-}
-```
+const cache: Cache = {};
 
-```typescript
-// Basic Caching Example
-const cache = {};
-
-function getCachedData(url: string) {
+async function getCachedData(url: string) {
   if (cache[url]) {
+    console.log("Returning cached data for URL:", url); // Helpful for debugging
     return Promise.resolve(cache[url]);
   } else {
-    return fetch(url).then(response => response.json()).then(data => {
-      cache[url] = data;
-      return data;
-    });
+    const response = await fetch(url);
+    const data = await response.json();
+    cache[url] = data; // Cache the newly fetched data
+    return data;
   }
 }
-```
 
-```typescript
 import React, { useState, useEffect } from 'react';
 
 const useDebouncedEffect = (fn: () => void, delay: number, deps: any[]) => {
@@ -48,24 +23,28 @@ const useDebouncedEffect = (fn: () => void, delay: number, deps: any[]) => {
     const handler = setTimeout(() => fn(), delay);
 
     return () => clearTimeout(handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, delay]);
+  }, [...deps, delay]); 
 };
 
 const SearchBooks = () => {
   const [query, setQuery] = useState('');
 
   useDebouncedEffect(() => {
-    // Assume fetchBooks is a function that fetches books from an API
-    fetchBooks(query).then(books => console.log(books));
+    if (!query.trim()) return;
+
+    getCachedData('https://api.example.com/books?search=' + query)
+      .then(books => console.log(books))
+      .catch(error => console.error("Failed to fetch books:", error)); // Always good to handle potential errors
   }, 500, [query]);
 
   return (
     <input
       type="text"
       value={query}
-      onChange={e => setQuery(e.target value)}
+      onChange={e => setQuery(e.target.value)}
       placeholder="Search books..."
     />
   );
 };
+
+export default SearchAAABooks;
