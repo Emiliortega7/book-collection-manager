@@ -3,70 +3,66 @@ import React, { useState, useEffect } from 'react';
 interface Book {
   id: number;
   title: string;
-  author: string;
+  authorName: string;
 }
 
-const BookList: React.FC<{ books: Book[] }> = ({ books }) => (
+const BookCollection: React.FC<{ books: Book[] }> = ({ books }) => (
   <div>
     {books.map((book) => (
       <div key={book.id}>
-        {book.title} by {book.author}
+        {book.title} by {book.authorName}
       </div>
     ))}
   </div>
 );
 
-const AddBookForm: React.FC<{ onAdd: (book: Omit<Book, 'id'>) => void }> = ({ onAdd }) => {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
+const NewBookForm: React.FC<{ onSaveNewBook: (bookDetails: Omit<Book, 'id'>) => void }> = ({ onSaveNewBook }) => {
+  const [bookTitle, setBookTitle] = useState('');
+  const [bookAuthor, setBookAuthor] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd({ title, author });
-    setTitle('');
-    setAuthor('');
+    onSaveNewBook({ title: bookTitle, author: bookAuthor });
+    setBookTitle('');
+    setBookAuthor('');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required />
-      <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Author" required />
+    <form onSubmit={handleFormSubmit}>
+      <input type="text" value={bookTitle} onChange={(e) => setBookTitle(e.target.value)} placeholder="Title" required />
+      <input type="text" value={bookAuthor} onChange={(e) => setBookAuthor(e.target.value)} placeholder="Author" required />
       <button type="submit">Add Book</button>
     </form>
   );
 };
 
-const BookManager: React.FC = () => {
-  const [books, setBooks] = useState<Book[]>([]);
+const BookCollectionManager: React.FC = () => {
+  const [bookCollection, setBookCollection] = useState<Book[]>([]);
 
   useEffect(() => {
-    // Simulate fetching the initial books list
-    const initialBooks: Book[] = [
-      { id: 1, title: 'Book One', author: 'Author One' },
-      { id: 2, title: 'Book Two', author: 'Author Two' },
+    const initialBookCollection: Book[] = [
+      { id: 1, title: 'Book One', authorName: 'Author One' },
+      { id: 2, title: 'Book Two', authorName: 'Author Two' },
     ];
-    setBooks(initialBooks);
+    setBookCollection(initialBookCollection);
   }, []);
 
-  const addBook = (bookData: Omit<Book, 'id'>) => {
-    const newBook: Book = { id: Math.random(), ...bookData }; // Simple id generation for example
-    setBooks([...books, newBook]);
+  const handleAddBook = (newBookDetails: Omit<Book, 'id'>) => {
+    const newBook: Book = { id: Math.random(), ...newBookDetails };
+    setBookCollection([...bookCollection, newBook]);
   };
-
-  const updateBook = (id: number, updatedBook: Omit<Book, 'id'>) => {
-    setBooks(books.map((book) => (book.id === id ? { ...book, ...updatedBook } : book)));
-  };
-
-  // Environment variables usage example
-  // console.log(process.env.REACT_APP_API_URL);
 
   return (
     <div>
       <h1>Book Collection Manager</h1>
-      <BookList books={books} />
-      <AddBookForm onAdd={addBook} />
+      <BookCollection books={bookCollection} />
+      <NewBook<form onSubmit={handleFormSubmit}>
+      <input type="text" value={bookTitle} onChange={(e) => setBookTitle(e.target.value)} placeholder="Title" required />
+      <input type="text" value={bookAuthor} onChange={(e) => setBookAuthor(e.target.value)} placeholder="Author" required />
+      <button type="submit">Add Book</button>
+    </form>ookForm onSaveNewBook={handleAddBook} />
     </div>
   );
 };
 
-export default BookManager;
+export default BookCollectionManager;
