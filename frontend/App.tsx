@@ -3,64 +3,60 @@ import React, { useState, useEffect } from 'react';
 interface Book {
   id: number;
   title: string;
-  authorName: string;
+  author: string;
 }
 
-const BookCollection: React.FC<{ books: Book[] }> = ({ books }) => (
+const BookList: React.FC<{ books: Book[] }> = ({ books }) => (
   <div>
     {books.map((book) => (
       <div key={book.id}>
-        {book.title} by {book.authorName}
+        {book.title} by {book.author}
       </div>
     ))}
   </div>
 );
 
-const NewBookForm: React.FC<{ onSaveNewBook: (bookDetails: Omit<Book, 'id'>) => void }> = ({ onSaveNewBook }) => {
-  const [bookTitle, setBookTitle] = useState('');
-  const [bookAuthor, setBookAuthor] = useState('');
+const AddBookForm: React.FC<{ onAddBook: (bookDetails: Omit<Book, 'id'>) => void }> = ({ onAddBook }) => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSaveNewBook({ title: bookTitle, author: bookAuthor });
-    setBookTitle('');
-    setBookAuthor('');
+    onAddBook({ title, author });
+    setTitle('');
+    setAuthor('');
   };
 
   return (
-    <form onSubmit={handleFormSubmit}>
-      <input type="text" value={bookTitle} onChange={(e) => setBookTitle(e.target.value)} placeholder="Title" required />
-      <input type="text" value={bookAuthor} onChange={(e) => setBookAuthor(e.target.value)} placeholder="Author" required />
+    <form onSubmit={handleSubmit}>
+      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required />
+      <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Author" required />
       <button type="submit">Add Book</button>
     </form>
   );
 };
 
 const BookCollectionManager: React.FC = () => {
-  const [bookCollection, setBookCollection] = useState<Book[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
 
   useEffect(() => {
-    const initialBookCollection: Book[] = [
-      { id: 1, title: 'Book One', authorName: 'Author One' },
-      { id: 2, title: 'Book Two', authorName: 'Author Two' },
+    const initialBooks: Book[] = [
+      { id: 1, title: 'Book One', author: 'Author One' },
+      { id: 2, title: 'Book Two', author: 'Author Two' },
     ];
-    setBookCollection(initialBookCollection);
+    setBooks(initialBooks);
   }, []);
 
-  const handleAddBook = (newBookDetails: Omit<Book, 'id'>) => {
-    const newBook: Book = { id: Math.random(), ...newBookDetails };
-    setBookCollection([...bookCollection, newBook]);
+  const addBook = (bookDetails: Omit<Book, 'id'>) => {
+    const newBookWithId: Book = { id: Math.random(), ...bookDetails };
+    setBooks([...books, newBookWithId]);
   };
 
   return (
     <div>
-      <h1>Book Collection Manager</h1>
-      <BookCollection books={bookCollection} />
-      <NewBook<form onSubmit={handleFormSubmit}>
-      <input type="text" value={bookTitle} onChange={(e) => setBookTitle(e.target.value)} placeholder="Title" required />
-      <input type="text" value={bookAuthor} onChange={(e) => setBookAuthor(e.target.value)} placeholder="Author" required />
-      <button type="submit">Add Book</button>
-    </form>ookForm onSaveNewBook={handleAddBook} />
+      <h1>Manage Your Book Collection</h1>
+      <BookList books={books} />
+      <AddBookForm onAddBook={addBook} />
     </div>
   );
 };
