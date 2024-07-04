@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 
 type Book = {
   id: string;
@@ -9,27 +9,48 @@ type Book = {
 
 type BooksListProps = {
   books: Book[];
-  onDelete: (id: string) => void;
-  onUpdate: (id: string) => void;
+  onDelete: (ids: string[]) => void; // Adjusted to accept an array of IDs
+  onUpdate: (ids: string[]) => void; // Adjusted to accept an array of IDs
 };
 
-const BookItem: FC<{ book: Book; onDelete: (id: string) => void; onUpdate: (id: string) => void; }> = ({ book, onDelete, onUpdate }) => {
-  return (
-    <li>
-      {book.title} by {book.author}, published in {book.publicationYear}
-      <button onClick={() => onUpdate(book.id)}>Update</button>
-      <button onClick={() => onDelete(book.id)}>Delete</button>
-    </li>
-  );
-};
+const BooksList: FC<Books, BooksListProps> = ({ books, onDelete, onUpdate }) => {
+  // State to collect IDs for deletion
+  const [deleteQueue, setDeleteQueue] = useState<string[]>([]);
+  // State to collect IDs for updates
+  const [updateQueue, setUpdateQueue] = useState<string[]>([]);
 
-const BooksList: FC<BooksListProps> = ({ books, onDelete, onUpdate }) => {
+  // Handle batch delete
+  const handleBatchDelete = () => {
+    onDelete(deleteQueue);
+    setDeleteQueue([]); // Reset queue after processing
+  };
+
+  // Handle batch update - assuming you have a mechanism to collect update details
+  const handleBatchUpdate = () => {
+    onUpdate(updateQueue);
+    setUpdateQueue([]); // Reset queue after processing
+  };
+
+  // Collect IDs for deletion, replace onDelete in BookItem with this
+  const enqueueDelete = (id: string) => {
+    setDeleteQueue(prev => [...prev, id]);
+  };
+
+  // Collect IDs for updates, replace onUpdate in BookItem with this
+  const enqueueUpdate = (id: string) => {
+    setUpdateQueue(prev => [...prev, id]);
+  };
+
   return (
-    <ul>
-      {books.map((book) => (
-        <BookItem key={book.id} book={book} onDelete={onDelete} onUpdate={onUpdate} />
-      ))}
-    </ul>
+    <div>
+      <ul>
+        {books.map((book) => (
+          <BookItem key={book.id} book={book} onDelete={enqueueDelete} onUpdate={enqueueUpdate} />
+        ))}
+      </ul>
+      <button onClick={handleBatchDelete}>Delete Selected</button>
+      <button onClick={handle_Datch=Udate}>Update Selected</button>
+    </div>
   );
 };
 
