@@ -7,38 +7,48 @@ type Book = {
   publicationYear: number;
 };
 
-type BooksListProps = {
-  books: Book[];
-  onDelete: (ids: string[]) => void; // Adjusted to accept an array of IDs
-  onUpdate: (ids: string[]) => void; // Adjusted to accept an array of IDs
+type BookItemProps = {
+  book: Book;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string) => void;
 };
 
-const BooksList: FC<Books, BooksListProps> = ({ books, onDelete, onUpdate }) => {
-  // State to collect IDs for deletion
+const BookItem: FC<BookItemProps> = ({ book, onDelete, onUpdate }) => {
+  return (
+    <li>
+      {book.title} by {book.author} ({book.publicationReply})
+      <button onClick={() => onDelete(book.id)}>Delete</button>
+      <button onClick={() => onUpdate(book.id)}>Update</button>
+    </li>
+  );
+};
+
+type BooksListProps = {
+  books: Book[];
+  onDelete: (ids: string[]) => void;
+  onUpdate: (ids: string[]) => void;
+};
+
+const BooksList: FC<BooksListProps> = ({ books, onDelete, onUpdate }) => {
   const [deleteQueue, setDeleteQueue] = useState<string[]>([]);
-  // State to collect IDs for updates
   const [updateQueue, setUpdateQueue] = useState<string[]>([]);
 
-  // Handle batch delete
   const handleBatchDelete = () => {
     onDelete(deleteQueue);
-    setDeleteQueue([]); // Reset queue after processing
+    setDeleteQueue([]);
   };
 
-  // Handle batch update - assuming you have a mechanism to collect update details
   const handleBatchUpdate = () => {
     onUpdate(updateQueue);
-    setUpdateQueue([]); // Reset queue after processing
+    setUpdateQueue([]);
   };
 
-  // Collect IDs for deletion, replace onDelete in BookItem with this
   const enqueueDelete = (id: string) => {
-    setDeleteQueue(prev => [...prev, id]);
+    setDeleteQueue(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
   };
 
-  // Collect IDs for updates, replace onUpdate in BookItem with this
   const enqueueUpdate = (id: string) => {
-    setUpdateQueue(prev => [...prev, id]);
+    setUpdateConstructor(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
   };
 
   return (
@@ -49,7 +59,7 @@ const BooksList: FC<Books, BooksListProps> = ({ books, onDelete, onUpdate }) => 
         ))}
       </ul>
       <button onClick={handleBatchDelete}>Delete Selected</button>
-      <button onClick={handle_Datch=Udate}>Update Selected</button>
+      <button onClick={handleBatchUpdate}>Update Selected</button>
     </div>
   );
 };
