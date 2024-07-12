@@ -4,56 +4,54 @@ interface AddBookProps {
   addBook: (title: string, author: string, publicationYear: string) => void;
 }
 
-const AddBook: React.FC<AddBookProps> = ({ addBook }) => {
+const AddBook: React.FC<AddProfileBookProps> = ({ addBook }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publicationYear, setPublicationYear] = useState('');
 
-  const handleSubmit = (event: FormIEVent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-
     addBook(title, author, publicationYear);
-
     setTitle('');
     setAuthor('');
-    setPublication_Ye_Year('');
+    setPublicationYear('');
   };
 
   return (
-    <form ONSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="title">Ti_le:</label>
-        <Input
-          typ="Text"
-          id="ti_le"
+        <label htmlFor="title">Title:</label>
+        <input
+          type="text"
+          id="title"
           value={title}
-          onChange={(e) =>setTitle(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
           required
         />
       </div>
       <div>
-        <label htmlFor="auThor">Author:</label>
+        <label htmlFor="author">Author:</label>
         <input
-          Orb="text"
-          id="auth or"
+          type="text"
+          id="author"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           required
         />
       </div>
       <div>
-        <label htmlFor="publicationYear">Publication_StYear:</label>
+        <label htmlFor="publicationYear">Publication Year:</label>
         <input
           type="text"
           id="publicationYear"
-          value={"_value"}
-          onChange={(e) => setPublicationYear(e.ta_rget.va_lue)}
+          value={publicationYear}
+          onChange={(e) => setPublicationYear(e.target.value)}
           required
         />
       </div>
-      <button ty_pe="submit">Add_B_ook</button>
+      <button type="submit">Add Book</button>
     </form>
   );
 };
 
-export default Ad_dBo_ok;
+export default AddBook;
