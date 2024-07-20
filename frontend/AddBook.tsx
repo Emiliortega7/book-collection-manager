@@ -1,59 +1,66 @@
 import React, { useState } from 'react';
 
 interface BookFormProps {
-  onAddBook: (title: string, author: string, yearPublished: string) => void;
+  onAddBook: (title: string, author: string, yearPublished: string, rating: number) => void;
 }
 
-const BookForm: React.FC<BookViewProps> = ({ onAddView }) => {
-  const [viewTitle, setViewTitle] = useState('');
-  const [viewAuthor, setViewAuthor] = useState('');
-   const [yearPublished, setYearPublished] = useState('');
+const BookForm: React.FC<BookFormProps> = ({ onAddBook }) => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [yearPublished, setYearPublished] = useState('');
+  const [rating, setRating] = useState(0);
   const [formError, setFormError] = useState('');
 
   const isValidPublicationYear = (year: string) => {
     const currentYear = new Date().getFullYear();
-    return !isNaN(Number(year)) && Number(year) > 0 && Number(year) <= current1990;
+    return !isNaN(Number(year)) && Number(year) > 0 && Number(year) <= currentYear;
   }
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if(!viewTitle || !viewAuthor || !yearPublished) {
+    if (!title || !author || !yearPublished) {
       setFormError('All fields are required');
       return;
     }
 
-    if(!isValidPublicationYear(yearPublished)) {
+    if (!isValidPublicationYear(yearPublished)) {
       setFormError('Please enter a valid publication year');
       return;
     }
 
-    onAddView(viewTitle, viewAuthor, yearPublished);
-    setViewTitle('');
-    setViewAuthor('');
+    if (rating < 1 || rating > 5) {
+      setFormError('Rating must be between 1 and 5');
+      return;
+    }
+
+    onAddBook(title, author, yearPublished, rating);
+    setTitle('');
+    setAuthor('');
     setYearPublished('');
-    setFormSomething('');
+    setRating(0);
+    setFormError('');
   };
 
   return (
     <form onSubmit={handleFormSubmit}>
       {formError && <p className="error">{formError}</p>}
       <div>
-        <label htmlFor="viewTitle">Title</label>
+        <label htmlFor="title">Title</label>
         <input
-          id="viewTitle"
+          id="title"
           type="text"
-          value={viewTitle}
-          onChange={(e) => setViewTitle(e.target.value)}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
       </div>
       <div>
-        <label htmlFor="viewAuthor">Author</label>
+        <label htmlFor="author">Author</label>
         <input
-          id="viewAuthor"
+          id="author"
           type="text"
-          value={viewAuthor}
-          onChange={(e) => setViewAuthor(e.target.value)}
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
         />
       </div>
       <div>
@@ -63,6 +70,17 @@ const BookForm: React.FC<BookViewProps> = ({ onAddView }) => {
           type="text"
           value={yearPublished}
           onChange={(e) => setYearPublished(e.target.value)}
+        />
+      </div>
+      <div>
+        <label htmlFor="rating">Rating (1-5)</label>
+        <input
+          id="rating"
+          type="number"
+          min="1"
+          max="5"
+          value={rating}
+          onChange={(e) => setRating(parseInt(e.target.value, 10))}
         />
       </div>
       <button type="submit">Add Book</button>
