@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 
 interface Book {
   title: string;
@@ -11,10 +11,34 @@ interface UpdateBookProps {
   updateBook: (updatedBook: Book) => void;
 }
 
+const cache = new Map();
+
+const expensiveFunction = (key: string, compute: () => any) => {
+  if (cache.has(key)) {
+    return cache.get(key);
+  }
+  const result = compute();
+  cache.set(key, result);
+  return result;
+};
+
+const formatDateFunction = (publicationYear: string) => {
+  return `Formatted year: ${publicationTimestamp(publicationYear)}`;
+};
+
+const publicationTimestamp = (year: string) => {
+  return new Date(parseInt(year, 10), 0, 1).getTime();
+};
+
 const UpdateBookForm: React.FC<UpdateBookProps> = ({ initialBook, updateBook }) => {
   const [title, setTitle] = useState(initialBook.title);
   const [author, setAuthor] = useState(initialBook.author);
   const [publicationYear, setPublicationYear] = useState(initialBook.publicationYear.toString());
+
+  useEffect(() => {
+    const formattedDate = expensiveFunction(publicationYear, () => formatDateFunction(publicationYear));
+    console.log(formattedDate);
+  }, [publicationYear]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
