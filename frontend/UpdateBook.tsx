@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, useMemo } from 'react';
 
 interface Book {
   title: string;
@@ -11,16 +11,16 @@ interface UpdateBookProps {
   updateBook: (updatedBook: Book) => void;
 }
 
-const cache = new Map();
+const cache = new Map<string, any>();
 
-const expensiveFunction = (key: string, compute: () => any) => {
+const expensiveFunction = useMemoizedCallback((key: string, compute: () => any) => {
   if (cache.has(key)) {
     return cache.get(key);
   }
   const result = compute();
   cache.set(key, result);
   return result;
-};
+});
 
 const formatDateFunction = (publicationYear: string) => {
   return `Formatted year: ${publicationTimestamp(publicationYear)}`;
@@ -30,13 +30,23 @@ const publicationTimestamp = (year: string) => {
   return new Date(parseInt(year, 10), 0, 1).getTime();
 };
 
+function useMemoizedCallback<T extends (...args: any[]) => any>(callback: T): T {
+  const callbackRef = useRef(callback);
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+  
+  return useMemo(() => (...args: any[]) => callbackRef.current(...args), []);
+}
+
 const UpdateBookForm: React.FC<UpdateBookProps> = ({ initialBook, updateBook }) => {
   const [title, setTitle] = useState(initialBook.title);
   const [author, setAuthor] = useState(initialBook.author);
   const [publicationYear, setPublicationYear] = useState(initialBook.publicationYear.toString());
 
   useEffect(() => {
-    const formattedDate = expensiveFunction(publicationYear, () => formatDateFunction(publicationYear));
+    const computeDateString = () => formatDateFunction(publicationYear);
+    const formattedDate = expensiveFunction(publicationYear, computeDateString);
     console.log(formattedDate);
   }, [publicationYear]);
 
